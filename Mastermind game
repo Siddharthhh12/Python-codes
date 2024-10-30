@@ -1,0 +1,54 @@
+import random
+import time
+import tkinter as tk
+from tkinter import simpledialog, messagebox
+
+def mastermind_gui():
+    # Initialize the main Tkinter window
+    root = tk.Tk()
+    root.withdraw()  # Hide the main window as we're only using dialog boxes
+    
+    messagebox.showinfo("Mastermind Game", "Welcome to the game!\nYou have 5 chances to guess the computer-generated 4-digit code within 2 minutes.\n\n- If you guess the correct number in the correct position, you will get a 'o'.\n- If you guess the correct number in the wrong position, you will get a 'x'.\n- If you guess a wrong number, you will get 'nahhh bro try something different'.")
+
+    # Generating the secret code
+    code = [random.randint(0, 9) for _ in range(4)]
+    attempts = 0
+    start_time = time.time()
+
+    while attempts < 5:
+        elapsed_time = time.time() - start_time
+        if elapsed_time > 120:
+            messagebox.showwarning("Time's Up!", "You didn't guess the code in 2 minutes.\nThe correct code was: " + ''.join(str(digit) for digit in code))
+            return
+        
+        guess = simpledialog.askstring("Input", "Enter your 4-digit guess:")
+        
+        if not guess or len(guess) != 4 or not guess.isdigit():
+            messagebox.showerror("Error", "Your guess should be a 4-digit number. Try again.")
+            continue
+        
+        guess = [int(i) for i in guess]
+        
+        if guess == code:
+            messagebox.showinfo("Congratulations!", "Crazzzyyyy! You guessed correctly. You are a mastermind.")
+            return
+        
+        hint = ""
+        for j in range(4):
+            if guess[j] == code[j]:
+                hint += "o\n"
+            elif guess[j] in code:
+                hint += "x\n"
+            else:
+                hint += "Nahhhh bro try something different\n"
+                
+        attempts += 1
+        attempt_message = f"You have used {attempts} chances.\n\n{hint}"
+        if attempts < 5:
+            attempt_message += "Try a different guess:"
+        messagebox.showinfo("Attempt " + str(attempts), attempt_message)
+    
+    messagebox.showinfo("Game Over", "You couldn't guess the code.\nThe correct code was: " + ''.join(str(digit) for digit in code))
+
+# Call the GUI version of the game
+mastermind_gui()
